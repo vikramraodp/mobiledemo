@@ -200,7 +200,7 @@ public class PatientActivity extends AppCompatActivity {
     private void onSendMonologue(String monologue) {
         waitCursor.show();
         //POST data to server
-        String url = settings.getString("ServerURL","") +"/virginia/monologue";
+        String url = settings.getString("ServerURL","") +"/monologue";
 
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("monologue", monologue);
@@ -324,7 +324,7 @@ public class PatientActivity extends AppCompatActivity {
 
     private void onSendOCR(final Bitmap image) {
         waitCursor.show();
-        String url = settings.getString("ServerURL","") +"/virginia/ocr";
+        String url = settings.getString("ServerURL","") +"/ocr";
         VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, url, new Response.Listener<NetworkResponse>() {
             @Override
             public void onResponse(NetworkResponse response) {
