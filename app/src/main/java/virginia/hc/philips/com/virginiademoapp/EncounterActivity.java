@@ -146,7 +146,7 @@ public class EncounterActivity extends AppCompatActivity {
 
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("monologue", monologue);
-        params.put("seed", "clinical");
+        params.put("seed", "clinicalv2");
 
         JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params),
                 new Response.Listener<JSONObject>()
