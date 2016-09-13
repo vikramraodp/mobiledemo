@@ -60,6 +60,9 @@ public class EncounterActivity extends AppCompatActivity {
     private EditText txtSend;
     private EditText txtSymptoms;
     private EditText txtCurrentMedication;
+    private EditText txtHistory;
+    private EditText txtFamilyHistory;
+    private EditText txtInvestigations;
     private EditText txtFindings;
 
     private SharedPreferences settings;
@@ -85,6 +88,9 @@ public class EncounterActivity extends AppCompatActivity {
 
         txtSymptoms = (EditText)findViewById(R.id.txtSymptoms);
         txtCurrentMedication = (EditText)findViewById(R.id.txtCurrentMedication);
+        txtHistory = (EditText)findViewById(R.id.txtHistory);
+        txtFamilyHistory = (EditText)findViewById(R.id.txtFamilyHistory);
+        txtInvestigations = (EditText)findViewById(R.id.txtInvestigations);
         txtFindings = (EditText)findViewById(R.id.txtFindings);
 
         final ImageButton btnVoice = (ImageButton)findViewById(R.id.btn_voice);
@@ -139,6 +145,30 @@ public class EncounterActivity extends AppCompatActivity {
         startActivityForResult(intent, REQUEST_CODE);
     }
 
+    private String getInvestigations(JSONArray output) {
+        String procedures = "";
+        String labevents = "";
+
+        try {
+            for (int i = 0; i < output.length(); i++) {
+                JSONObject result = output.getJSONObject(i);
+                if(result.getString("for").equalsIgnoreCase("procedures")){
+                    procedures = result.getString("match");
+                } else if(result.getString("for").equalsIgnoreCase("labevents")){
+                    labevents = result.getString("match");
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if(procedures.length() > 0 && labevents.length() > 0) {
+            procedures += ", ";
+        }
+        procedures += labevents;
+        return procedures;
+    }
+
     private void onSendMonologue(String monologue) {
         waitCursor.show();
         //POST data to server
@@ -158,6 +188,7 @@ public class EncounterActivity extends AppCompatActivity {
                         JSONArray output = null;
                         try {
                             output = response.getJSONArray("out");
+                            txtInvestigations.setText(EncounterActivity.this.getInvestigations(output));
                             for(int i = 0; i < output.length(); i++) {
                                 try {
                                     JSONObject result = output.getJSONObject(i);
@@ -167,6 +198,10 @@ public class EncounterActivity extends AppCompatActivity {
                                         txtFindings.setText(result.getString("match"));
                                     } else if(result.getString("for").equalsIgnoreCase("medication")){
                                         txtCurrentMedication.setText(result.getString("match"));
+                                    } else if(result.getString("for").equalsIgnoreCase("patienthistory")){
+                                        txtHistory.setText(result.getString("match"));
+                                    } else if(result.getString("for").equalsIgnoreCase("familyhistory")){
+                                        txtFamilyHistory.setText(result.getString("match"));
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();

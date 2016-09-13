@@ -197,6 +197,33 @@ public class PatientActivity extends AppCompatActivity {
         startActivityForResult(intent, REQUEST_CODE);
     }
 
+    private String getPatientAge(JSONArray output) {
+        String age = "";
+        String age_unit = "";
+
+        try {
+
+            for (int i = 0; i < output.length(); i++) {
+                JSONObject result = output.getJSONObject(i);
+                if (result.getString("for").equalsIgnoreCase("age")) {
+                    age = result.getString("match");
+                } else if (result.getString("for").equalsIgnoreCase("age_unit")) {
+                    age_unit = result.getString("match");
+                    if (!age_unit.endsWith("s")) {
+                        age_unit += "s";
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if(age.length() > 0) {
+            age += " " + age_unit;
+        }
+        return age;
+    }
+
     private void onSendMonologue(String monologue) {
         waitCursor.show();
         //POST data to server
@@ -216,6 +243,10 @@ public class PatientActivity extends AppCompatActivity {
                         JSONArray output = null;
                         try {
                             output = response.getJSONArray("out");
+                            String age = PatientActivity.this.getPatientAge(output);
+                            if(age.length() > 0) {
+                                txtAge.setText(age);
+                            }
                             for(int i = 0; i < output.length(); i++) {
                                 try {
                                     JSONObject result = output.getJSONObject(i);
@@ -223,8 +254,6 @@ public class PatientActivity extends AppCompatActivity {
                                         txtFirstName.setText(result.getString("match"));
                                     } else if(result.getString("for").equalsIgnoreCase("last_name")){
                                         txtLastName.setText(result.getString("match"));
-                                    } else if(result.getString("for").equalsIgnoreCase("age")){
-                                        txtAge.setText(result.getString("match"));
                                     } else if(result.getString("for").equalsIgnoreCase("address")){
                                         txtAddress.setText(result.getString("match"));
                                     } else if(result.getString("for").equalsIgnoreCase("gender")){
